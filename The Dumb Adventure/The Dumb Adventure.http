@@ -1,0 +1,6 @@
+@The_Dumb_Adventure_HostAddress = http://localhost:5250
+
+GET {{The_Dumb_Adventure_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
