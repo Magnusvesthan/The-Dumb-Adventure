@@ -1,8 +1,10 @@
 ﻿using System;
-
-public class Class1
+namespace SurvivalGame.Models
 {
-	public Class1()
-	{
-	}
+public class EventOption
+    {
+        public int Points { get; set; }
+        public string Text { get; set; }
+        public string Result { get; set; }
+    }
 }
