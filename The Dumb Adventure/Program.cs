@@ -5,7 +5,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseStaticFiles();
+
 app.UseSwagger();
 app.UseSwaggerUI();
+
 app.MapControllers();
 app.Run();
+
+

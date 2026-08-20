@@ -2,22 +2,22 @@ let points = 0;
 document.getElementById("newEvent").addEventListener("click", loadEvent);
 
 function loadEvent() {
-    fetch("http://localhost:5250/api/event")
+    fetch("http://localhost:5500/api/event")
         .then(res => res.json())
         .then(data => {
-            document.getElementById("scenario").innerText = data.scenario;
+            document.getElementById("scenario").innerText = data.Scenario;
             document.getElementById("result").innerText = "";
-            const optionDiv = document.getElementById("option");
+            const optionDiv = document.getElementById("options");
             optionDiv.innerText = "";
 
-            data.options.forEach(option => {
+            data.Options.forEach(option => {
                 const btn = document.createElement("button");
                 btn.className = "option-btn";
-                btn.innerText = option.text;
+                btn.innerText = option.Text;
 
                 btn.onclick = () => {
-                    points += option.points
-                    document.getElementById("result").innerText = option.result;
+                    points += option.Points
+                    document.getElementById("result").innerText = option.Result;
                     document.getElementById("points").innerText = "Point " + points;
                 };
                 optionDiv.appendChild(btn);
