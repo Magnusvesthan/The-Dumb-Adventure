@@ -7,7 +7,7 @@ function loadEvent() {
         .then(data => {
             document.getElementById("scenario").innerText = data.scenario;
             document.getElementById("result").innerText = "";
-            const optionDiv = document.getElementById("option");
+            const optionDiv = document.getElementById("options");
             optionDiv.innerText = "";
 
             data.options.forEach(option => {
