@@ -35,9 +35,9 @@ namespace SurvivalGame.Controllers
 			{
 				Scenario = "En kat udfordrer dig til sten-saks-papir.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Sten", Points = rnd.Next(-10, 10), Result = "Katten valgte tilfældigt"},
-					new EventOption { Text = "Saks", Points = rnd.Next(-10, 10), Result = "Katten valgte tilfældigt"},
-					new EventOption { Text = "Papir", Points = rnd.Next(-10, 10), Result = "Katten valgte tilfældigt"}
+					new EventOption { Text = "Sten", Points = 0, Result = "Katten valgte tilfældigt"},
+					new EventOption { Text = "Saks", Points = 0, Result = "Katten valgte tilfældigt"},
+					new EventOption { Text = "Papir", Points = 0, Result = "Katten valgte tilfældigt"}
 				}
 			}
 

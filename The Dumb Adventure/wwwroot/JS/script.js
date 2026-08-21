@@ -2,6 +2,29 @@ let points = 0;
 
 const apiBaseUrl = "http://localhost:5250";
 
+const choiceMap = {
+    Sten: "Saks",
+    Saks: "Papir",
+    Papir: "Sten"
+};
+
+function getCatChoice() {
+    const choices = ["Sten", "Saks", "Papir"];
+    return choices[Math.floor(Math.random() * choices.length)];
+}
+
+function resolveRockPaperScissors(playerChoice, catChoice) {
+    if (playerChoice === catChoice) {
+        return { pointsDelta: 0, message: `Uafgjort! Katten valgte ${catChoice}.` };
+    }
+
+    if (choiceMap[playerChoice] === catChoice) {
+        return { pointsDelta: 10, message: `Du vandt! Katten valgte ${catChoice}.` };
+    }
+
+    return { pointsDelta: -10, message: `Du tabte! Katten valgte ${catChoice}.` };
+}
+
 document.getElementById("newEvent").addEventListener("click", loadEvent);
 
 function loadEvent() {
@@ -19,9 +42,19 @@ function loadEvent() {
             options.forEach(option => {
                 const btn = document.createElement("button");
                 btn.className = "option-btn";
-                btn.innerText = option.text ?? option.Text;
+                const optionText = option.text ?? option.Text;
+                btn.innerText = optionText;
 
                 btn.onclick = () => {
+                    if ((optionText === "Sten" || optionText === "Saks" || optionText === "Papir") && scenarioText.includes("sten-saks-papir")) {
+                        const catChoice = getCatChoice();
+                        const outcome = resolveRockPaperScissors(optionText, catChoice);
+                        points += outcome.pointsDelta;
+                        document.getElementById("result").innerText = outcome.message;
+                        document.getElementById("points").innerText = "Points: " + points;
+                        return;
+                    }
+
                     points += option.points ?? option.Points ?? 0;
                     document.getElementById("result").innerText = option.result ?? option.Result;
                     document.getElementById("points").innerText = "Points: " + points;
