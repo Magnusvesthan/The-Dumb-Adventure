@@ -5,7 +5,7 @@ namespace SurvivalGame.Models
 {
 	public class GameEvent
 	{
-		public string Scenario { get; set; }
-		public List<EventOption> Options { get; set; }
+		public required string Scenario { get; set; }
+		public required List<EventOption> Options { get; set; }
 	}
 }
