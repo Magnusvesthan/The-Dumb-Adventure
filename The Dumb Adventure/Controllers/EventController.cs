@@ -178,9 +178,20 @@ namespace SurvivalGame.Controllers
 
 		};
 		[HttpGet]
-		public IActionResult GetRandomEvent()
+		public IActionResult GetRandomEvent([FromQuery] int level = 1)
 		{
-			var e = events[rnd.Next(events.Count)];
+			level = Math.Max(level, 1);
+			var maximumPointsDifference = level * 10;
+			var availableEvents = events
+				.Where(gameEvent => gameEvent.Options.Max(option => Math.Abs(option.Points)) <= maximumPointsDifference)
+				.ToList();
+
+			if (availableEvents.Count == 0)
+			{
+				availableEvents = events;
+			}
+
+			var e = availableEvents[rnd.Next(availableEvents.Count)];
 			return Ok(e);
 		}
 	}

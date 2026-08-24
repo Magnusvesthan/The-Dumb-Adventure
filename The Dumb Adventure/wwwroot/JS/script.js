@@ -18,8 +18,13 @@ const pointsElement = document.getElementById("points");
 const livesElement = document.getElementById("lives");
 const titleElement = document.getElementById("title");
 const xpElement = document.getElementById("xp");
+const levelElement = document.getElementById("level");
 const comboElement = document.getElementById("combo");
-const scoreList = document.getElementById("scoreList");
+const leaderboardLists = {
+    events: document.getElementById("eventsScoreList"),
+    points: document.getElementById("pointsScoreList"),
+    xp: document.getElementById("xpScoreList")
+};
 const logList = document.getElementById("logList");
 
 function getScores() {
@@ -31,20 +36,32 @@ function getScores() {
 }
 
 function renderLeaderboard() {
-    scoreList.innerHTML = "";
-    getScores().slice(0, 10).forEach((score) => {
-        const item = document.createElement("li");
-        const nameButton = document.createElement("button");
-        const scoreText = document.createElement("span");
+    const scores = getScores();
+    const rankings = [
+        [leaderboardLists.events, (score) => score.events ?? 0, "events"],
+        [leaderboardLists.points, (score) => score.points ?? 0, "points"],
+        [leaderboardLists.xp, (score) => score.xp ?? 0, "XP"]
+    ];
 
-        nameButton.className = "score-name";
-        nameButton.type = "button";
-        nameButton.innerText = score.name;
-        nameButton.addEventListener("click", () => renderSurvivalLog(score.log ?? []));
-        scoreText.innerText = `: ${score.points} points | ${score.events ?? 0} events | ${score.title ?? "Nybegynder"} | ${score.xp ?? 0} XP`;
+    rankings.forEach(([list, value, label]) => {
+        list.innerHTML = "";
+        [...scores]
+            .sort((first, second) => value(second) - value(first))
+            .slice(0, 10)
+            .forEach((score) => {
+                const item = document.createElement("li");
+                const nameButton = document.createElement("button");
+                const scoreText = document.createElement("span");
 
-        item.append(nameButton, scoreText);
-        scoreList.appendChild(item);
+                nameButton.className = "score-name";
+                nameButton.type = "button";
+                nameButton.innerText = score.name;
+                nameButton.addEventListener("click", () => renderSurvivalLog(score.log ?? []));
+                scoreText.innerText = `: ${value(score)} ${label}`;
+
+                item.append(nameButton, scoreText);
+                list.appendChild(item);
+            });
     });
 }
 
@@ -55,16 +72,18 @@ function saveScore() {
     const existingScoreIndex = scores.findIndex((score) =>
         score.name?.trim().toLowerCase() === name.toLowerCase()
     );
-    const newScore = { name, points: highestScore, events: eventsSurvived, title: getTitle(), xp, log: [...currentRoundLog] };
+    const newScore = { name, points, events: eventsSurvived, xp, log: [...currentRoundLog] };
 
     if (existingScoreIndex === -1) {
         scores.push(newScore);
-    } else if (highestScore > scores[existingScoreIndex].points) {
-        scores[existingScoreIndex] = newScore;
+    } else {
+        const existingScore = scores[existingScoreIndex];
+        existingScore.points = (existingScore.points ?? 0) + newScore.points;
+        existingScore.events = (existingScore.events ?? 0) + newScore.events;
+        existingScore.xp = (existingScore.xp ?? 0) + newScore.xp;
+        existingScore.log = [...(existingScore.log ?? []), ...newScore.log];
     }
 
-    scores.sort((first, second) => second.points - first.points);
-    scores.splice(10);
     localStorage.setItem(leaderboardKey, JSON.stringify(scores));
     renderLeaderboard();
 }
@@ -144,6 +163,15 @@ function updateXp() {
     xpElement.innerText = "XP: " + xp;
 }
 
+function getLevel() {
+    return Math.floor(xp / 100) + 1;
+}
+
+function updateLevel() {
+    const nextLevelXp = getLevel() * 100;
+    levelElement.innerText = `Level: ${getLevel()} (${xp}/${nextLevelXp} XP)`;
+}
+
 function updateCombo() {
     comboElement.innerText = "Combo: " + combo;
 }
@@ -156,6 +184,7 @@ function addPoints(pointsDelta) {
     highestScore = Math.max(highestScore, points);
     pointsElement.innerText = "Points: " + points;
     updateXp();
+    updateLevel();
     updateTitle();
 
     if (pointsDelta > 0) {
@@ -195,13 +224,12 @@ function restartGame() {
     xp = 0;
     combo = 0;
     gameOver = false;
-    clearSurvivalLog();
     pointsElement.innerText = "Points: 0";
     updateLives();
     updateXp();
+    updateLevel();
     updateTitle();
     updateCombo();
-    resultElement.innerText = "";
     restartButton.hidden = true;
     newEventButton.disabled = false;
     loadEvent();
@@ -264,7 +292,7 @@ function loadEvent() {
         return;
     }
 
-    fetch(`${apiBaseUrl}/api/event`)
+    fetch(`${apiBaseUrl}/api/event?level=${getLevel()}`)
         .then(res => res.json())
         .then(data => {
             const scenarioText = data.scenario ?? data.Scenario;
@@ -300,7 +328,7 @@ function loadEvent() {
                     }
 
                     const optionResult = option.result ?? option.Result;
-                    const pointsDelta = option.points ?? option.Points ?? 0;
+                    const pointsDelta = option.points ?? option.Points ?? 0; // Restore original points
                     resultElement.innerText = optionResult;
                     addSurvivalLogEntry(scenarioText, optionText, optionResult, pointsDelta);
                     eventsSurvived += 1;

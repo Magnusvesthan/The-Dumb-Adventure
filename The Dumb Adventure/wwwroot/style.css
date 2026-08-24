@@ -77,6 +77,10 @@ main {
     padding-bottom: 12px;
 }
 
+#leaderboard h3 {
+    margin: 18px 0 6px;
+}
+
 #scenario {
     color: var(--ink);
     font-size: 1.25rem;
@@ -94,7 +98,8 @@ main {
 #lives,
 #title,
 #combo,
-#xp {
+#xp,
+#level {
     color: var(--muted);
     font-weight: bold;
 }
@@ -109,6 +114,10 @@ main {
 
 #xp {
     color: #b06b16;
+}
+
+#level {
+    color: #8b4f9f;
 }
 
 #logList {
@@ -158,11 +167,15 @@ main {
     outline: 3px solid rgba(23, 105, 170, 0.16);
 }
 
-#scoreList {
+#eventsScoreList,
+#pointsScoreList,
+#xpScoreList {
     padding-left: 28px;
 }
 
-#scoreList li {
+#eventsScoreList li,
+#pointsScoreList li,
+#xpScoreList li {
     padding: 3px 0;
 }
 

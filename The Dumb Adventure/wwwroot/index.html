@@ -20,6 +20,7 @@
                 <p id="lives">Liv: 3</p>
                 <p id="title">Titel: Nybegynder</p>
                 <p id="xp">XP: 0</p>
+                <p id="level">Level: 1</p>
                 <p id="combo">Combo: 0</p>
                 <div id="choiceButtons"></div>
                 <button id="newEvent" type="button">Næste Event</button>
@@ -31,7 +32,12 @@
             <h2>Highscore</h2>
             <label for="playerName">Indtast spillernavn</label>
             <input id="playerName" type="text" maxlength="20" placeholder="Indtast spillernavn" autocomplete="name">
-            <ol id="scoreList"></ol>
+            <h3>Flest events</h3>
+            <ol id="eventsScoreList"></ol>
+            <h3>Flest points</h3>
+            <ol id="pointsScoreList"></ol>
+            <h3>Mest XP</h3>
+            <ol id="xpScoreList"></ol>
         </section>
 
         <section id="survivalLog" aria-label="Survival log">
