@@ -1,5 +1,4 @@
-﻿using System;
-namespace SurvivalGame.Models
+﻿namespace SurvivalGame.Models
 {
 public class EventOption
     {

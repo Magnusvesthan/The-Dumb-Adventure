@@ -1,6 +1,12 @@
 let points = 0;
 
-const apiBaseUrl = "http://localhost:5250";
+const apiBaseUrl = (() => {
+    if (window.location.origin && window.location.origin !== "null") {
+        return window.location.origin;
+    }
+
+    return "http://localhost:5250";
+})();
 
 const choiceMap = {
     Sten: "Saks",
@@ -46,18 +52,24 @@ function loadEvent() {
                 btn.innerText = optionText;
 
                 btn.onclick = () => {
+                    optionDiv.querySelectorAll("button").forEach(button => {
+                        button.disabled = true;
+                    });
+
                     if ((optionText === "Sten" || optionText === "Saks" || optionText === "Papir") && scenarioText.includes("sten-saks-papir")) {
                         const catChoice = getCatChoice();
                         const outcome = resolveRockPaperScissors(optionText, catChoice);
                         points += outcome.pointsDelta;
                         document.getElementById("result").innerText = outcome.message;
                         document.getElementById("points").innerText = "Points: " + points;
+                        setTimeout(loadEvent, 1500);
                         return;
                     }
 
                     points += option.points ?? option.Points ?? 0;
                     document.getElementById("result").innerText = option.result ?? option.Result;
                     document.getElementById("points").innerText = "Points: " + points;
+                    setTimeout(loadEvent, 1500);
                 };
                 optionDiv.appendChild(btn);
             });

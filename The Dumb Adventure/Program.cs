@@ -16,8 +16,8 @@ builder.Services.AddCors(options =>
                 "http://127.0.0.1:5501",
                 "http://localhost:5250",
                 "http://127.0.0.1:5250")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -36,13 +36,8 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseCors("AllowLiveServer");
-
 app.MapGet("/", () => Results.Redirect("/index.html"));
-
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.MapControllers();
 app.Run();
-
-
