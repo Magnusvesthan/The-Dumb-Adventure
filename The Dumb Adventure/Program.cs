@@ -9,13 +9,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLiveServer", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5500",
-                "http://localhost:5501",
-                "http://127.0.0.1:5500",
-                "http://127.0.0.1:5501",
-                "http://localhost:5250",
-                "http://127.0.0.1:5250")
+        policy.SetIsOriginAllowed(origin =>
+            Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+            (uri.Host == "localhost" || uri.Host == "127.0.0.1"))
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

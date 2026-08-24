@@ -1,35 +1,230 @@
-﻿body {
-    background: #f0f8ff;
-    font-family: Arial, sans-serif;
+﻿:root {
+    --ink: #18324b;
+    --muted: #607487;
+    --paper: #ffffff;
+    --line: #dbe6ed;
+    --green: #2f9e62;
+    --green-dark: #237b4b;
+    --blue: #1769aa;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #eaf6f2, #f7fbfd 55%, #fff4e8);
+    color: var(--ink);
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    padding: 48px 24px;
+}
+
+header {
+    margin-bottom: 28px;
     text-align: center;
-    padding: 40px;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: 0;
+}
+
+main {
+    display: grid;
+    grid-template-columns: minmax(280px, 420px) minmax(220px, 280px) minmax(260px, 340px);
+    gap: 20px;
+    justify-content: center;
+    align-items: start;
 }
 
 #game {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    margin: auto;
-    box-shadow: 0 0 10px #aaa;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-top: 5px solid var(--green);
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(24, 50, 75, 0.12);
+    padding: 30px;
+    text-align: center;
+}
+
+#leaderboard {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(24, 50, 75, 0.09);
+    padding: 24px;
+    text-align: left;
+}
+
+#survivalLog {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(24, 50, 75, 0.09);
+    max-height: 560px;
+    overflow-y: auto;
+    padding: 24px;
+    text-align: left;
+}
+
+#leaderboard h2,
+#survivalLog h2 {
+    border-bottom: 1px solid var(--line);
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+}
+
+#scenario {
+    color: var(--ink);
+    font-size: 1.25rem;
+    line-height: 1.5;
+    min-height: 58px;
+}
+
+#result {
+    color: var(--green-dark);
+    font-weight: bold;
+    min-height: 24px;
+}
+
+#points,
+#lives,
+#title,
+#combo,
+#xp {
+    color: var(--muted);
+    font-weight: bold;
+}
+
+#title {
+    color: var(--blue);
+}
+
+#combo {
+    color: var(--green-dark);
+}
+
+#xp {
+    color: #b06b16;
+}
+
+#logList {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin: 0;
+    padding-left: 24px;
+}
+
+#logList li {
+    border-bottom: 1px solid var(--line);
+    padding-left: 4px;
+    padding-bottom: 10px;
+}
+
+#logList li::marker {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.log-challenge {
+    display: block;
+    font-weight: bold;
+}
+
+.log-details {
+    color: var(--muted);
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-top: 3px;
+}
+
+#playerName {
+    display: block;
+    border: 1px solid #b9cbd6;
+    border-radius: 6px;
+    font: inherit;
+    margin: 8px 0 16px;
+    padding: 10px;
+    width: 100%;
+}
+
+#playerName:focus {
+    border-color: var(--blue);
+    outline: 3px solid rgba(23, 105, 170, 0.16);
+}
+
+#scoreList {
+    padding-left: 28px;
+}
+
+#scoreList li {
+    padding: 3px 0;
+}
+
+.score-name {
+    background: none;
+    color: var(--blue);
+    font: inherit;
+    margin: 0 2px 0 0;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.score-name:hover {
+    background: none;
+    color: #0d47a1;
+}
+
+@media (max-width: 760px) {
+    body {
+        padding: 28px 16px;
+    }
+
+    header {
+        margin-bottom: 20px;
+    }
+
+    main {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    #game,
+    #leaderboard,
+    #survivalLog {
+        width: 100%;
+    }
 }
 
 button {
-    padding: 10px 20px;
-    margin: 10px;
     border: none;
-    background: #4CAF50;
+    border-radius: 7px;
+    background: var(--green);
     color: white;
-    border-radius: 5px;
     cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+    padding: 11px 20px;
+    transition: background 150ms ease, transform 150ms ease;
 }
 
-    button:hover {
-        background: #45a049;
-    }
+button:hover {
+    background: var(--green-dark);
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
 
 .option-btn {
     display: block;
+    margin: 12px 0;
     width: 100%;
-    margin-top: 10px;
 }

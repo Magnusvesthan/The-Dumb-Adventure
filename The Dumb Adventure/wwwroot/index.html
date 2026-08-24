@@ -2,7 +2,7 @@
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title> The Dumb Adventure</title>
+    <title>The Dumb Adventure</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,15 +11,32 @@
     </header>
 
     <main>
-        <section id="game" arial-label= "suvival spil">
+        <section id="game" aria-label="Survival-spil">
             <p id="scenario"> Tryk på knappen for at starte!</p>
 
-            <section id="options" arial-label= "Valgmuligheder">
+            <section id="options" aria-label="Valgmuligheder">
                 <p id="result" aria-live="polite"></p>
                 <p id="points">Points: 0</p>
+                <p id="lives">Liv: 3</p>
+                <p id="title">Titel: Nybegynder</p>
+                <p id="xp">XP: 0</p>
+                <p id="combo">Combo: 0</p>
                 <div id="choiceButtons"></div>
                 <button id="newEvent" type="button">Næste Event</button>
+                <button id="restart" type="button" hidden>Spil igen</button>
             </section>
+        </section>
+
+        <section id="leaderboard" aria-label="Highscore">
+            <h2>Highscore</h2>
+            <label for="playerName">Indtast spillernavn</label>
+            <input id="playerName" type="text" maxlength="20" placeholder="Indtast spillernavn" autocomplete="name">
+            <ol id="scoreList"></ol>
+        </section>
+
+        <section id="survivalLog" aria-label="Survival log">
+            <h2>Survival log</h2>
+            <ol id="logList"></ol>
         </section>
     </main>
     <script src="JS/script.js"></script>

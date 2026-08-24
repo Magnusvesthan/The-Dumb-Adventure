@@ -1,12 +1,236 @@
 let points = 0;
+let highestScore = 0;
+let lives = 3;
+let gameOver = false;
+let eventsSurvived = 0;
+let xp = 0;
+let combo = 0;
+let currentRoundLog = [];
 
-const apiBaseUrl = (() => {
-    if (window.location.origin && window.location.origin !== "null") {
-        return window.location.origin;
+const apiBaseUrl = "http://localhost:5250";
+const leaderboardKey = "theDumbAdventureLeaderboard";
+
+const newEventButton = document.getElementById("newEvent");
+const restartButton = document.getElementById("restart");
+const optionDiv = document.getElementById("choiceButtons");
+const resultElement = document.getElementById("result");
+const pointsElement = document.getElementById("points");
+const livesElement = document.getElementById("lives");
+const titleElement = document.getElementById("title");
+const xpElement = document.getElementById("xp");
+const comboElement = document.getElementById("combo");
+const scoreList = document.getElementById("scoreList");
+const logList = document.getElementById("logList");
+
+function getScores() {
+    try {
+        return JSON.parse(localStorage.getItem(leaderboardKey)) ?? [];
+    } catch {
+        return [];
+    }
+}
+
+function renderLeaderboard() {
+    scoreList.innerHTML = "";
+    getScores().slice(0, 10).forEach((score) => {
+        const item = document.createElement("li");
+        const nameButton = document.createElement("button");
+        const scoreText = document.createElement("span");
+
+        nameButton.className = "score-name";
+        nameButton.type = "button";
+        nameButton.innerText = score.name;
+        nameButton.addEventListener("click", () => renderSurvivalLog(score.log ?? []));
+        scoreText.innerText = `: ${score.points} points | ${score.events ?? 0} events | ${score.title ?? "Nybegynder"} | ${score.xp ?? 0} XP`;
+
+        item.append(nameButton, scoreText);
+        scoreList.appendChild(item);
+    });
+}
+
+function saveScore() {
+    const nameInput = document.getElementById("playerName");
+    const name = nameInput.value.trim() || "Anonym spiller";
+    const scores = getScores();
+    const existingScoreIndex = scores.findIndex((score) =>
+        score.name?.trim().toLowerCase() === name.toLowerCase()
+    );
+    const newScore = { name, points: highestScore, events: eventsSurvived, title: getTitle(), xp, log: [...currentRoundLog] };
+
+    if (existingScoreIndex === -1) {
+        scores.push(newScore);
+    } else if (highestScore > scores[existingScoreIndex].points) {
+        scores[existingScoreIndex] = newScore;
     }
 
-    return "http://localhost:5250";
-})();
+    scores.sort((first, second) => second.points - first.points);
+    scores.splice(10);
+    localStorage.setItem(leaderboardKey, JSON.stringify(scores));
+    renderLeaderboard();
+}
+
+function renderSurvivalLog(entries) {
+    logList.innerHTML = "";
+    entries.forEach((entry) => {
+        const logEntry = document.createElement("li");
+        const challenge = document.createElement("span");
+        const details = document.createElement("span");
+
+        challenge.className = "log-challenge";
+        challenge.innerText = entry.scenario;
+        details.className = "log-details";
+        details.innerText = `Valg: ${entry.choice} | ${entry.result} (${entry.pointsDelta >= 0 ? "+" : ""}${entry.pointsDelta} points)`;
+
+        logEntry.append(challenge, details);
+        logList.appendChild(logEntry);
+    });
+}
+
+function addSurvivalLogEntry(scenario, choice, result, pointsDelta) {
+    currentRoundLog.push({ scenario, choice, result, pointsDelta });
+    renderSurvivalLog(currentRoundLog);
+}
+
+function clearSurvivalLog() {
+    currentRoundLog = [];
+    renderSurvivalLog(currentRoundLog);
+}
+
+function endGame() {
+    gameOver = true;
+    optionDiv.innerHTML = "";
+    newEventButton.disabled = true;
+    restartButton.hidden = false;
+    let ending;
+    if (highestScore >= 100) {
+        ending = "Du blev en legende og overlevede næsten alt!";
+    } else if (eventsSurvived >= 10) {
+        ending = "Du overlevede længe nok til at blive en ægte survivor!";
+    } else {
+        ending = "Eventyret sluttede, men du kæmpede tappert.";
+    }
+    resultElement.innerText = `${ending} Du fik ${highestScore} points og overlevede ${eventsSurvived} events. Scoren er gemt i highscores.`;
+    saveScore();
+}
+
+function updateLives() {
+    livesElement.innerText = "Liv: " + lives;
+}
+
+function getTitle() {
+    if (xp >= 3500) {
+        return "Udødelig overlever";
+    }
+    if (xp >= 2000) {
+        return "Survival-mester";
+    }
+    if (xp >= 1000) {
+        return "Eventyrer";
+    }
+    if (xp >= 500) {
+        return "Erfaren overlever";
+    }
+    if (xp >= 250) {
+        return "Overlever";
+    }
+    return "Nybegynder";
+}
+
+function updateTitle() {
+    titleElement.innerText = "Titel: " + getTitle();
+}
+
+function updateXp() {
+    xpElement.innerText = "XP: " + xp;
+}
+
+function updateCombo() {
+    comboElement.innerText = "Combo: " + combo;
+}
+
+function addPoints(pointsDelta) {
+    points += pointsDelta;
+    if (pointsDelta > 0) {
+        xp += 10;
+    }
+    highestScore = Math.max(highestScore, points);
+    pointsElement.innerText = "Points: " + points;
+    updateXp();
+    updateTitle();
+
+    if (pointsDelta > 0) {
+        combo += 1;
+        updateCombo();
+        if (combo % 3 === 0) {
+            points += 10;
+            highestScore = Math.max(highestScore, points);
+            pointsElement.innerText = "Points: " + points;
+            updateTitle();
+            resultElement.innerText += ` Combo x${combo}! +10 bonus points.`;
+            addSurvivalLogEntry("Combo-bonus", `Lav ${combo} gode valg i træk`, "Du fik 10 ekstra points", 10);
+        }
+    } else if (pointsDelta < 0) {
+        combo = 0;
+        updateCombo();
+    }
+
+    if (pointsDelta < 0 && Math.random() < 0.5) {
+        lives -= 1;
+        updateLives();
+        resultElement.innerText += " Du mistede et liv!";
+    }
+
+    if (lives <= 0) {
+        endGame();
+        return true;
+    }
+    return false;
+}
+
+function restartGame() {
+    points = 0;
+    highestScore = 0;
+    lives = 3;
+    eventsSurvived = 0;
+    xp = 0;
+    combo = 0;
+    gameOver = false;
+    clearSurvivalLog();
+    pointsElement.innerText = "Points: 0";
+    updateLives();
+    updateXp();
+    updateTitle();
+    updateCombo();
+    resultElement.innerText = "";
+    restartButton.hidden = true;
+    newEventButton.disabled = false;
+    loadEvent();
+}
+
+function giveRandomBonus() {
+    if (Math.random() < 0.2) {
+        points += 20;
+        highestScore = Math.max(highestScore, points);
+        pointsElement.innerText = "Points: " + points;
+        resultElement.innerText += " Du fandt en bonus på 20 points!";
+        addSurvivalLogEntry("Tilfældig bonus", "Samlede bonus op", "Du fik 20 ekstra points", 20);
+    }
+
+    if (Math.random() < 0.2) {
+        xp += 20;
+        updateXp();
+        updateTitle();
+        resultElement.innerText += " Du fandt 20 ekstra XP!";
+        addSurvivalLogEntry("Tilfældig bonus", "Samlede bonus op", "Du fik 20 ekstra XP", 0);
+    }
+
+    if (lives < 3 && Math.random() < 0.05) {
+        lives += 1;
+        updateLives();
+        resultElement.innerText += " Du fandt et ekstra liv!";
+        addSurvivalLogEntry("Tilfældig bonus", "Samlede bonus op", "Du fik et ekstra liv", 0);
+    }
+}
 
 const choiceMap = {
     Sten: "Saks",
@@ -31,9 +255,15 @@ function resolveRockPaperScissors(playerChoice, catChoice) {
     return { pointsDelta: -10, message: `Du tabte! Katten valgte ${catChoice}.` };
 }
 
-document.getElementById("newEvent").addEventListener("click", loadEvent);
+newEventButton.addEventListener("click", loadEvent);
+restartButton.addEventListener("click", restartGame);
+renderLeaderboard();
 
 function loadEvent() {
+    if (gameOver) {
+        return;
+    }
+
     fetch(`${apiBaseUrl}/api/event`)
         .then(res => res.json())
         .then(data => {
@@ -42,7 +272,6 @@ function loadEvent() {
 
             document.getElementById("scenario").innerText = scenarioText;
             document.getElementById("result").innerText = "";
-            const optionDiv = document.getElementById("choiceButtons");
             optionDiv.innerHTML = "";
 
             options.forEach(option => {
@@ -59,16 +288,27 @@ function loadEvent() {
                     if ((optionText === "Sten" || optionText === "Saks" || optionText === "Papir") && scenarioText.includes("sten-saks-papir")) {
                         const catChoice = getCatChoice();
                         const outcome = resolveRockPaperScissors(optionText, catChoice);
-                        points += outcome.pointsDelta;
-                        document.getElementById("result").innerText = outcome.message;
-                        document.getElementById("points").innerText = "Points: " + points;
+                        resultElement.innerText = outcome.message;
+                        addSurvivalLogEntry(scenarioText, optionText, outcome.message, outcome.pointsDelta);
+                        eventsSurvived += 1;
+                        if (addPoints(outcome.pointsDelta)) {
+                            return;
+                        }
+                        giveRandomBonus();
                         setTimeout(loadEvent, 1500);
                         return;
                     }
 
-                    points += option.points ?? option.Points ?? 0;
-                    document.getElementById("result").innerText = option.result ?? option.Result;
-                    document.getElementById("points").innerText = "Points: " + points;
+                    const optionResult = option.result ?? option.Result;
+                    const pointsDelta = option.points ?? option.Points ?? 0;
+                    resultElement.innerText = optionResult;
+                    addSurvivalLogEntry(scenarioText, optionText, optionResult, pointsDelta);
+                    eventsSurvived += 1;
+                    const hasDied = addPoints(pointsDelta);
+                    if (hasDied) {
+                        return;
+                    }
+                    giveRandomBonus();
                     setTimeout(loadEvent, 1500);
                 };
                 optionDiv.appendChild(btn);

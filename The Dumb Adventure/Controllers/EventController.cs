@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SurvivalGame.Models;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System;
 namespace SurvivalGame.Controllers
@@ -42,29 +41,29 @@ namespace SurvivalGame.Controllers
 			},
 			new GameEvent
 			{
-				Scenario = "Du finder en skattekiste i skoven.",
+				Scenario = "Det begynder at regne på vej hjem.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Åbn den", Points = 20, Result = "Du fandt guld!"},
-					new EventOption { Text = "Ignorer den", Points = 0, Result = "Du går videre uden at åbne kisten."},
-					new EventOption { Text = "Tag den med hjem", Points = 10, Result = "Du tager kisten med hjem og finder nogle skatte senere."}
+					new EventOption { Text = "Løb hjem", Points = 5, Result = "Du kommer hurtigt hjem, men bliver våd."},
+					new EventOption { Text = "Vent i en butik", Points = 10, Result = "Regnen stopper, før du går videre."},
+					new EventOption { Text = "Gå videre", Points = -5, Result = "Du bliver gennemblødt."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "Du møder en venlig troldmand.",
+				Scenario = "Du kan ikke finde dine nøgler.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Bed om en trylleformular", Points = 15, Result = "Troldmanden giver dig en kraftfuld trylleformular!"},
-					new EventOption { Text = "Spørg om råd", Points = 5, Result = "Troldmanden giver dig nogle nyttige tips."},
-					new EventOption { Text = "Ignorer ham", Points = 0, Result = "Du går videre uden at interagere med troldmanden."}
+					new EventOption { Text = "Tjek dine lommer", Points = 5, Result = "Nøglerne ligger i din jakkelomme."},
+					new EventOption { Text = "Kig hele hjemmet igennem", Points = 10, Result = "Du finder nøglerne på køkkenbordet."},
+					new EventOption { Text = "Ring efter hjælp", Points = 0, Result = "Du kommer ind, men skal stadig finde nøglerne."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "Du finder en mystisk potion.",
+				Scenario = "Du står i en lang kø i supermarkedet.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Drik den", Points = 20, Result = "Potionen giver dig superkræfter!"},
-					new EventOption { Text = "Gem den til senere", Points = 5, Result = "Du gemmer potionen og kan bruge den senere."},
-					new EventOption { Text = "Kast den væk", Points = -10, Result = "Du mister muligheden for at få superkræfter."}
+					new EventOption { Text = "Bliv i køen", Points = 5, Result = "Du får handlet færdig."},
+					new EventOption { Text = "Find en anden kasse", Points = 10, Result = "Den anden kasse går lidt hurtigere."},
+					new EventOption { Text = "Gå hjem uden at handle", Points = -5, Result = "Du sparer tid, men mangler stadig varerne."}
 				}
 			},
 			new GameEvent
@@ -78,75 +77,101 @@ namespace SurvivalGame.Controllers
 			},
 			new GameEvent
 			{
-				Scenario = "Du finder en skjult hule.",
+				Scenario = "En ven spørger, om du kan hjælpe med at flytte.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Udforsk hulen", Points = 15, Result = "Du finder skjulte skatte!"},
-					new EventOption { Text = "Ignorer hulen", Points = 0, Result = "Du går videre uden at udforske hulen."},
-					new EventOption { Text = "Tag en ven med ind", Points = 5, Result = "Din ven hjælper dig med at finde skatte i hulen."}
+					new EventOption { Text = "Hjælp med det samme", Points = 15, Result = "I bliver hurtigt færdige."},
+					new EventOption { Text = "Aftal et tidspunkt senere", Points = 10, Result = "I finder et tidspunkt, der passer."},
+					new EventOption { Text = "Sig nej tak", Points = 0, Result = "Din ven finder en anden løsning."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "Du møder en gammel vis mand.",
+				Scenario = "Du opdager, at en opgave skal afleveres i morgen.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Spørg om visdom", Points = 10, Result = "Den gamle mand deler sin visdom med dig."},
-					new EventOption { Text = "Ignorer ham", Points = 0, Result = "Du går videre uden at interagere med den gamle mand."},
-					new EventOption { Text = "Bed om en gave", Points = 5, Result = "Den gamle mand giver dig en magisk genstand."}
+					new EventOption { Text = "Gå i gang med det samme", Points = 15, Result = "Du bliver færdig i god tid."},
+					new EventOption { Text = "Lave en plan", Points = 10, Result = "Du får bedre overblik over opgaven."},
+					new EventOption { Text = "Udskyd den", Points = -10, Result = "Du får travlt senere."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "Du finder en skjult skattekort.",
+				Scenario = "Din nabo spiller høj musik.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Følg kortet", Points = 20, Result = "Du finder en skjult skat!"},
-					new EventOption { Text = "Ignorer kortet", Points = 0, Result = "Du går videre uden at følge kortet."},
-					new EventOption { Text = "Del kortet med en ven", Points = 5, Result = "Din ven hjælper dig med at finde skatten."}
+					new EventOption { Text = "Spørg pænt, om der kan skrues ned", Points = 15, Result = "Naboen skruer ned for musikken."},
+					new EventOption { Text = "Bruge høretelefoner", Points = 5, Result = "Du kan koncentrere dig trods musikken."},
+					new EventOption { Text = "Ignorere det", Points = 0, Result = "Musikken stopper senere."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "Du støder på en mystisk portal.",
+				Scenario = "Du finder en pung på fortovet.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Gå igennem portalen", Points = 15, Result = "Du bliver transporteret til en anden dimension!"},
-					new EventOption { Text = "Ignorer portalen", Points = 0, Result = "Du går videre uden at interagere med portalen."},
-					new EventOption { Text = "Undersøg portalen nærmere", Points = 5, Result = "Du finder ud af, at portalen fører til en skjult skattekiste."}
+					new EventOption { Text = "Aflevere den til politiet", Points = 15, Result = "Ejeren kan få pungen tilbage."},
+					new EventOption { Text = "Lægge den synligt", Points = 5, Result = "Ejeren har en chance for at finde den."},
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "Du møder en venlig fe.",
+				Scenario = "Du har en ledig eftermiddag.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Bed om et ønske", Points = 20, Result = "Feen opfylder dit ønske!"},
-					new EventOption { Text = "Ignorer feen", Points = 0, Result = "Du går videre uden at interagere med feen."},
-					new EventOption { Text = "Spørg om råd", Points = 5, Result = "Feen giver dig nogle nyttige tips."}
+					new EventOption { Text = "Rydde op derhjemme", Points = 10, Result = "Dit værelse bliver mere ryddeligt."},
+					new EventOption { Text = "Møde en ven", Points = 15, Result = "I hygger jer sammen."},
+					new EventOption { Text = "Slappe af", Points = 5, Result = "Du får ladet op."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "Du møder en lille pige i skoven, der græder.",
+				Scenario = " Du er til en fest, og nogen tilbyder dig en drink.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Trøst hende", Points = 10, Result = "Pigen bliver glad og takker dig."},
-					new EventOption { Text = "Ignorer hende", Points = 0, Result = "Du går videre uden at hjælpe pigen."},
-					new EventOption { Text = "Spørg hvad der er galt", Points = 5, Result = "Pigen fortæller dig, at hun har mistet sin bamse."},
-					new EventOption { Text = "Voldtag hende", Points = -100, Result = "Du bliver arresteret og mister alle dine point."}
+					new EventOption { Text = "Tag imod drinken", Points = 5, Result = "Du nyder festen."},
+					new EventOption { Text = "Afvis høfligt", Points = 10, Result = "Du holder dig ædru og har det sjovt."},
+					new EventOption { Text = "Lav din egen drink", Points = 15, Result = "Du imponerer dine venner med dine mixevner."}
+				}	
+			},
+			new GameEvent
+			{
+				Scenario = "Du sidder på dit arbejde og opdager, at du har lavet en fejl i et vigtigt dokument.",
+				Options = new List<EventOption> {
+					new EventOption { Text = "Ret fejlen med det samme", Points = 15, Result = "Du undgår problemer senere."},
+					new EventOption { Text = "Informer din chef om fejlen", Points = 10, Result = "Din chef hjælper dig med at rette fejlen."},
+					new EventOption { Text = "Ignorer fejlen og håb på det bedste", Points = -10, Result = "Fejlen bliver opdaget senere, og du får problemer."}
+				}		
+			},
+			new GameEvent
+			{
+				Scenario = "Du er på en vandretur og støder på en flod, der blokerer din vej.",
+				Options = new List<EventOption> {
+					new EventOption { Text = "Forsøg at krydse floden", Points = 10, Result = "Du kommer sikkert over floden."},
+					new EventOption { Text = "Find en bro eller en anden vej", Points = 15, Result = "Du finder en sikker rute rundt om floden."},
+					new EventOption { Text = "Vend om og gå tilbage", Points = 5, Result = "Du undgår risikoen, men mister tid."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = " Du møder en pedofil i skoven.",
+				Scenario = "Du er på en campingtur og opdager, at du har glemt at medbringe mad.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Ignorer ham", Points = 0, Result = "Du går videre uden at interagere med den pedofil."},
-					new EventOption { Text = "Rapporter ham", Points = 10, Result = "Du rapporterer den pedofil til politiet."},
-					new EventOption { Text = "Forsøg at overbevise ham", Points = 5, Result = "Du forsøger at overbevise den pedofil, men det lykkes ikke."}
+					new EventOption { Text = "Gå tilbage til bilen og hent mad", Points = 10, Result = "Du får mad og kan fortsætte turen."},
+					new EventOption { Text = "Forsøg at finde spiselige planter i naturen", Points = 5, Result = "Du finder nogle bær og nødder, men det er ikke nok."},
+					new EventOption { Text = "Lav en nødplan og vent på hjælp", Points = 15, Result = "Du får hjælp fra andre campister, der deler deres mad med dig."}
 				}
 			},
 			new GameEvent
 			{
-				Scenario = "DU bliver jagtet af et bande",
+				Scenario = "Du er på en cykeltur og punkterer din cykel.",
 				Options = new List<EventOption> {
-					new EventOption { Text = "Løb væk", Points = 5, Result = "Du undslap banden!"},
-					new EventOption { Text = "Forsøg at forhandle", Points = -10, Result = "Banden angriber dig!"},
-					new EventOption { Text = "Kast penge til dem", Points = 10, Result = "Banden bliver glade og lader dig passere."}
+					new EventOption { Text = "Forsøg at reparere cyklen selv", Points = 10, Result = "Du får cyklen til at køre igen."},
+					new EventOption { Text = "Ring efter hjælp", Points = 15, Result = "En ven kommer og hjælper dig med at reparere cyklen."},
+					new EventOption { Text = "Gå hjem med cyklen", Points = 5, Result = "Du mister tid, men kommer sikkert hjem."}
+				}
+			},
+			new GameEvent 
+			{
+				Scenario = "Du møder en pige i skoven, der græder.",
+				Options = new List<EventOption> {
+					new EventOption { Text = "Spørg hende, hvad der er galt", Points = 10, Result = "Hun fortæller dig, at hun er faret vild."},
+					new EventOption { Text = "Tilbyd at hjælpe hende med at finde vej", Points = 15, Result = "I finder sammen tilbage til stien."},
+					new EventOption { Text = "Ignorer hende og gå videre", Points = -5, Result = "Hun bliver mere fortvivlet og du føler dig skyldig."},
+					new EventOption { Text = "Voldtag hende", Points = -100, Result = "Du bliver arresteret og mister spillet."}
 				}
 			}
 
