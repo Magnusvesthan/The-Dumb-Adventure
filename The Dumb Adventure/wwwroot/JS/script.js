@@ -26,6 +26,7 @@ const leaderboardLists = {
     xp: document.getElementById("xpScoreList")
 };
 const logList = document.getElementById("logList");
+const playerNameInput = document.getElementById("playerName");
 
 function getScores() {
     try {
@@ -51,23 +52,32 @@ function renderLeaderboard() {
             .forEach((score) => {
                 const item = document.createElement("li");
                 const nameButton = document.createElement("button");
+                const titleText = document.createElement("span");
                 const scoreText = document.createElement("span");
 
                 nameButton.className = "score-name";
                 nameButton.type = "button";
                 nameButton.innerText = score.name;
                 nameButton.addEventListener("click", () => renderSurvivalLog(score.log ?? []));
+                titleText.className = "score-title";
+                titleText.innerText = ` (${getTitleForXp(score.xp ?? 0)})`;
                 scoreText.innerText = `: ${value(score)} ${label}`;
 
-                item.append(nameButton, scoreText);
+                item.append(nameButton, titleText, scoreText);
                 list.appendChild(item);
             });
     });
 }
 
 function saveScore() {
-    const nameInput = document.getElementById("playerName");
-    const name = nameInput.value.trim() || "Anonym spiller";
+    const name = playerNameInput.value.trim();
+    if (!name) {
+        playerNameInput.setCustomValidity("Indtast et spillernavn før du starter.");
+        playerNameInput.reportValidity();
+        playerNameInput.focus();
+        return;
+    }
+    playerNameInput.setCustomValidity("");
     const scores = getScores();
     const existingScoreIndex = scores.findIndex((score) =>
         score.name?.trim().toLowerCase() === name.toLowerCase()
@@ -136,23 +146,30 @@ function updateLives() {
     livesElement.innerText = "Liv: " + lives;
 }
 
-function getTitle() {
-    if (xp >= 3500) {
+function getTitleForXp(scoreXp) {
+    if (scoreXp >= 5000) {
+        return "Overlevelseslegende";
+    }
+    if (scoreXp >= 3500) {
         return "Udødelig overlever";
     }
-    if (xp >= 2000) {
+    if (scoreXp >= 2000) {
         return "Survival-mester";
     }
-    if (xp >= 1000) {
+    if (scoreXp >= 1000) {
         return "Eventyrer";
     }
-    if (xp >= 500) {
+    if (scoreXp >= 500) {
         return "Erfaren overlever";
     }
-    if (xp >= 250) {
+    if (scoreXp >= 250) {
         return "Overlever";
     }
     return "Nybegynder";
+}
+
+function getTitle() {
+    return getTitleForXp(xp);
 }
 
 function updateTitle() {
@@ -291,6 +308,15 @@ function loadEvent() {
     if (gameOver) {
         return;
     }
+
+    if (!playerNameInput.value.trim()) {
+        playerNameInput.setCustomValidity("Indtast et spillernavn før du starter.");
+        playerNameInput.reportValidity();
+        playerNameInput.focus();
+        return;
+    }
+
+    playerNameInput.setCustomValidity("");
 
     fetch(`${apiBaseUrl}/api/event?level=${getLevel()}`)
         .then(res => res.json())

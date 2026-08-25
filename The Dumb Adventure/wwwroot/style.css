@@ -4,7 +4,7 @@
     --paper: #ffffff;
     --line: #dbe6ed;
     --green: #2f9e62;
-    --green-dark: #237b4b;
+    --red-dark: red;
     --blue: #1769aa;
 }
 
@@ -22,7 +22,11 @@ body {
 }
 
 header {
+    align-items: center;
+    display: flex;
+    justify-content: center;
     margin-bottom: 28px;
+    position: relative;
     text-align: center;
 }
 
@@ -43,7 +47,7 @@ main {
 #game {
     background: var(--paper);
     border: 1px solid var(--line);
-    border-top: 5px solid var(--green);
+    border-top: 5px solid var(--blue);
     border-radius: 14px;
     box-shadow: 0 12px 30px rgba(24, 50, 75, 0.12);
     padding: 30px;
@@ -89,7 +93,7 @@ main {
 }
 
 #result {
-    color: var(--green-dark);
+    color: var(--blue);
     font-weight: bold;
     min-height: 24px;
 }
@@ -109,7 +113,7 @@ main {
 }
 
 #combo {
-    color: var(--green-dark);
+    color: var(--blue);
 }
 
 #xp {
@@ -135,7 +139,7 @@ main {
 }
 
 #logList li::marker {
-    color: #4caf50;
+    color: var(--blue);
     font-weight: bold;
 }
 
@@ -193,6 +197,11 @@ main {
     color: #0d47a1;
 }
 
+.score-title {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
 @media (max-width: 760px) {
     body {
         padding: 28px 16px;
@@ -216,7 +225,7 @@ main {
 button {
     border: none;
     border-radius: 7px;
-    background: var(--green);
+    background: var(--blue);
     color: white;
     cursor: pointer;
     font: inherit;
@@ -226,7 +235,7 @@ button {
 }
 
 button:hover {
-    background: var(--green-dark);
+    background: var(--red-dark);
     transform: translateY(-1px);
 }
 
