@@ -16,15 +16,19 @@
 
             <section id="options" aria-label="Valgmuligheder">
                 <p id="result" aria-live="polite"></p>
-                <p id="points">Points: 0</p>
-                <p id="lives">Liv: 3</p>
-                <p id="title">Titel: Nybegynder</p>
-                <p id="xp">XP: 0</p>
-                <p id="level">Level: 1</p>
-                <p id="combo">Combo: 0</p>
-                <div id="choiceButtons"></div>
-                <button id="newEvent" type="button">Næste Event</button>
-                <button id="restart" type="button" hidden>Spil igen</button>
+                <div class="game-stats" aria-label="Spilstatus">
+                    <p id="points">Points: 0</p>
+                    <p id="lives">Liv: 3</p>
+                    <p id="title">Titel: Nybegynder</p>
+                    <p id="xp">XP: 0</p>
+                    <p id="level">Level: 1</p>
+                    <p id="combo">Combo: 0</p>
+                </div>
+                <div id="choiceButtons" aria-label="Svarmuligheder"></div>
+                <div class="game-actions">
+                    <button id="newEvent" type="button">Næste Event</button>
+                    <button id="restart" type="button" hidden>Spil igen</button>
+                </div>
             </section>
         </section>
 

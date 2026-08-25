@@ -98,6 +98,17 @@ main {
     min-height: 24px;
 }
 
+.game-stats {
+    display: grid;
+    gap: 8px 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 24px 0;
+}
+
+.game-stats p {
+    margin: 0;
+}
+
 #points,
 #lives,
 #title,
@@ -200,6 +211,13 @@ main {
 .score-title {
     color: var(--muted);
     font-size: 0.9rem;
+}
+
+.game-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
 }
 
 @media (max-width: 760px) {

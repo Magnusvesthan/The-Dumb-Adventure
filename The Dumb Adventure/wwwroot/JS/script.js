@@ -13,6 +13,7 @@ const leaderboardKey = "theDumbAdventureLeaderboard";
 const newEventButton = document.getElementById("newEvent");
 const restartButton = document.getElementById("restart");
 const optionDiv = document.getElementById("choiceButtons");
+const scenarioElement = document.getElementById("scenario");
 const resultElement = document.getElementById("result");
 const pointsElement = document.getElementById("points");
 const livesElement = document.getElementById("lives");
@@ -69,28 +70,63 @@ function renderLeaderboard() {
     });
 }
 
-function saveScore() {
+function getPlayerName() {
     const name = playerNameInput.value.trim();
+
     if (!name) {
         playerNameInput.setCustomValidity("Indtast et spillernavn før du starter.");
         playerNameInput.reportValidity();
         playerNameInput.focus();
+        return null;
+    }
+
+    playerNameInput.setCustomValidity("");
+    return name;
+}
+
+function findScore(scores, name) {
+    const normalizedName = name.trim().toLowerCase();
+    return scores.find((score) =>
+        score.name?.trim().toLowerCase() === normalizedName
+    );
+}
+
+function getSavedScore(name) {
+    return findScore(getScores(), name);
+}
+
+function loadSavedPlayerData() {
+    if (points !== 0 || xp !== 0 || eventsSurvived !== 0 || gameOver) {
         return;
     }
-    playerNameInput.setCustomValidity("");
-    const scores = getScores();
-    const existingScoreIndex = scores.findIndex((score) =>
-        score.name?.trim().toLowerCase() === name.toLowerCase()
-    );
-    const newScore = { name, points, events: eventsSurvived, xp, log: [...currentRoundLog] };
 
-    if (existingScoreIndex === -1) {
+    const name = playerNameInput.value.trim();
+    const savedScore = getSavedScore(name);
+    if (!savedScore) {
+        return;
+    }
+
+    eventsSurvived = savedScore.events ?? 0;
+    xp = savedScore.xp ?? 0;
+    updateGameStats();
+    resultElement.innerText = `Velkommen tilbage, ${savedScore.name}! Din gemte titel, level og XP er indlæst.`;
+}
+
+function saveScore() {
+    const name = getPlayerName();
+    if (!name) {
+        return;
+    }
+    const scores = getScores();
+    const newScore = { name, points, events: eventsSurvived, xp, log: [...currentRoundLog] };
+    const existingScore = findScore(scores, name);
+
+    if (!existingScore) {
         scores.push(newScore);
     } else {
-        const existingScore = scores[existingScoreIndex];
-        existingScore.points = (existingScore.points ?? 0) + newScore.points;
-        existingScore.events = (existingScore.events ?? 0) + newScore.events;
-        existingScore.xp = (existingScore.xp ?? 0) + newScore.xp;
+        existingScore.points = newScore.points;
+        existingScore.events = newScore.events;
+        existingScore.xp = newScore.xp;
         existingScore.log = [...(existingScore.log ?? []), ...newScore.log];
     }
 
@@ -120,26 +156,23 @@ function addSurvivalLogEntry(scenario, choice, result, pointsDelta) {
     renderSurvivalLog(currentRoundLog);
 }
 
-function clearSurvivalLog() {
-    currentRoundLog = [];
-    renderSurvivalLog(currentRoundLog);
-}
-
 function endGame() {
     gameOver = true;
     optionDiv.innerHTML = "";
     newEventButton.disabled = true;
     restartButton.hidden = false;
-    let ending;
-    if (highestScore >= 100) {
-        ending = "Du blev en legende og overlevede næsten alt!";
-    } else if (eventsSurvived >= 10) {
-        ending = "Du overlevede længe nok til at blive en ægte survivor!";
-    } else {
-        ending = "Eventyret sluttede, men du kæmpede tappert.";
-    }
-    resultElement.innerText = `${ending} Du fik ${highestScore} points og overlevede ${eventsSurvived} events. Scoren er gemt i highscores.`;
+    resultElement.innerText = `${getEndingMessage()} Du fik ${highestScore} points og overlevede ${eventsSurvived} events. Scoren er gemt i highscores.`;
     saveScore();
+}
+
+function getEndingMessage() {
+    if (highestScore >= 100) {
+        return "Du blev en legende og overlevede næsten alt!";
+    }
+    if (eventsSurvived >= 10) {
+        return "Du overlevede længe nok til at blive en ægte survivor!";
+    }
+    return "Eventyret sluttede, men du kæmpede tappert.";
 }
 
 function updateLives() {
@@ -193,6 +226,15 @@ function updateCombo() {
     comboElement.innerText = "Combo: " + combo;
 }
 
+function updateGameStats() {
+    pointsElement.innerText = "Points: " + points;
+    updateLives();
+    updateXp();
+    updateLevel();
+    updateTitle();
+    updateCombo();
+}
+
 function addPoints(pointsDelta) {
     points += pointsDelta;
     if (pointsDelta > 0) {
@@ -240,15 +282,12 @@ function restartGame() {
     eventsSurvived = 0;
     xp = 0;
     combo = 0;
+    currentRoundLog = [];
     gameOver = false;
-    pointsElement.innerText = "Points: 0";
-    updateLives();
-    updateXp();
-    updateLevel();
-    updateTitle();
-    updateCombo();
+    updateGameStats();
     restartButton.hidden = true;
     newEventButton.disabled = false;
+    loadSavedPlayerData();
     loadEvent();
 }
 
@@ -302,6 +341,7 @@ function resolveRockPaperScissors(playerChoice, catChoice) {
 
 newEventButton.addEventListener("click", loadEvent);
 restartButton.addEventListener("click", restartGame);
+playerNameInput.addEventListener("change", loadSavedPlayerData);
 renderLeaderboard();
 
 function loadEvent() {
@@ -309,14 +349,9 @@ function loadEvent() {
         return;
     }
 
-    if (!playerNameInput.value.trim()) {
-        playerNameInput.setCustomValidity("Indtast et spillernavn før du starter.");
-        playerNameInput.reportValidity();
-        playerNameInput.focus();
+    if (!getPlayerName()) {
         return;
     }
-
-    playerNameInput.setCustomValidity("");
 
     fetch(`${apiBaseUrl}/api/event?level=${getLevel()}`)
         .then(res => res.json())
@@ -324,8 +359,8 @@ function loadEvent() {
             const scenarioText = data.scenario ?? data.Scenario;
             const options = data.options ?? data.Options ?? [];
 
-            document.getElementById("scenario").innerText = scenarioText;
-            document.getElementById("result").innerText = "";
+            scenarioElement.innerText = scenarioText;
+            resultElement.innerText = "";
             optionDiv.innerHTML = "";
 
             options.forEach(option => {
@@ -354,7 +389,7 @@ function loadEvent() {
                     }
 
                     const optionResult = option.result ?? option.Result;
-                    const pointsDelta = option.points ?? option.Points ?? 0; // Restore original points
+                    const pointsDelta = option.points ?? option.Points ?? 0;
                     resultElement.innerText = optionResult;
                     addSurvivalLogEntry(scenarioText, optionText, optionResult, pointsDelta);
                     eventsSurvived += 1;
@@ -370,6 +405,6 @@ function loadEvent() {
         })
         .catch(error => {
             console.error("Kunne ikke hente event:", error);
-            document.getElementById("result").innerText = "Kunne ikke hente nyt event. Start ASP.NET-serveren på port 5250.";
+            resultElement.innerText = "Kunne ikke hente nyt event. Start ASP.NET-serveren på port 5250.";
         });
 }

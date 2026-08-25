@@ -1,6 +1,6 @@
 ﻿namespace SurvivalGame.Models
 {
-public class EventOption
+    public class EventOption
     {
         public int Points { get; set; }
         public required string Text { get; set; }
