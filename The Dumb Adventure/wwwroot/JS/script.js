@@ -8,7 +8,8 @@ let combo = 0;
 let currentRoundLog = [];
 
 const apiBaseUrl = "http://localhost:5250";
-const leaderboardKey = "theDumbAdventureLeaderboard";
+const leaderboardKey = "theDumbAdventureLeaderboardV2";
+const legacyLeaderboardKey = "theDumbAdventureLeaderboard";
 
 const newEventButton = document.getElementById("newEvent");
 const restartButton = document.getElementById("restart");
@@ -31,7 +32,24 @@ const playerNameInput = document.getElementById("playerName");
 
 function getScores() {
     try {
-        return JSON.parse(localStorage.getItem(leaderboardKey)) ?? [];
+        const savedScores = localStorage.getItem(leaderboardKey);
+        if (savedScores) {
+            return JSON.parse(savedScores) ?? [];
+        }
+
+        const legacyScores = JSON.parse(localStorage.getItem(legacyLeaderboardKey)) ?? [];
+        const migratedScores = legacyScores
+            .filter((score) => score.name?.trim() && score.name !== "Anonym spiller")
+            .map((score) => ({
+                name: score.name.trim(),
+                points: 0,
+                events: 0,
+                xp: score.xp ?? 0,
+                log: score.log ?? []
+            }));
+
+        localStorage.setItem(leaderboardKey, JSON.stringify(migratedScores));
+        return migratedScores;
     } catch {
         return [];
     }
@@ -106,7 +124,6 @@ function loadSavedPlayerData() {
         return;
     }
 
-    eventsSurvived = savedScore.events ?? 0;
     xp = savedScore.xp ?? 0;
     updateGameStats();
     resultElement.innerText = `Velkommen tilbage, ${savedScore.name}! Din gemte titel, level og XP er indlæst.`;
@@ -125,7 +142,7 @@ function saveScore() {
         scores.push(newScore);
     } else {
         existingScore.points = newScore.points;
-        existingScore.events = newScore.events;
+        existingScore.events = Math.max(existingScore.events ?? 0, newScore.events);
         existingScore.xp = newScore.xp;
         existingScore.log = [...(existingScore.log ?? []), ...newScore.log];
     }
