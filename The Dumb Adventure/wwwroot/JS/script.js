@@ -8,8 +8,8 @@ let combo = 0;
 let currentRoundLog = [];
 
 const apiBaseUrl = "http://localhost:5250";
-const leaderboardKey = "theDumbAdventureLeaderboardV2";
-const legacyLeaderboardKey = "theDumbAdventureLeaderboard";
+const leaderboardKey = "theDumbAdventureLeaderboardV3";
+const recentGamesKey = "theDumbAdventureRecentGamesV1";
 
 const newEventButton = document.getElementById("newEvent");
 const restartButton = document.getElementById("restart");
@@ -27,29 +27,21 @@ const leaderboardLists = {
     points: document.getElementById("pointsScoreList"),
     xp: document.getElementById("xpScoreList")
 };
+const recentGamesList = document.getElementById("recentGamesList");
 const logList = document.getElementById("logList");
 const playerNameInput = document.getElementById("playerName");
 
 function getScores() {
     try {
-        const savedScores = localStorage.getItem(leaderboardKey);
-        if (savedScores) {
-            return JSON.parse(savedScores) ?? [];
-        }
+        return JSON.parse(localStorage.getItem(leaderboardKey)) ?? [];
+    } catch {
+        return [];
+    }
+}
 
-        const legacyScores = JSON.parse(localStorage.getItem(legacyLeaderboardKey)) ?? [];
-        const migratedScores = legacyScores
-            .filter((score) => score.name?.trim() && score.name !== "Anonym spiller")
-            .map((score) => ({
-                name: score.name.trim(),
-                points: 0,
-                events: 0,
-                xp: score.xp ?? 0,
-                log: score.log ?? []
-            }));
-
-        localStorage.setItem(leaderboardKey, JSON.stringify(migratedScores));
-        return migratedScores;
+function getRecentGames() {
+    try {
+        return JSON.parse(localStorage.getItem(recentGamesKey)) ?? [];
     } catch {
         return [];
     }
@@ -77,7 +69,12 @@ function renderLeaderboard() {
                 nameButton.className = "score-name";
                 nameButton.type = "button";
                 nameButton.innerText = score.name;
-                nameButton.addEventListener("click", () => renderSurvivalLog(score.log ?? []));
+                nameButton.addEventListener("click", () => {
+                    const latestGame = getRecentGames().find((game) =>
+                        game.name?.trim().toLowerCase() === score.name?.trim().toLowerCase()
+                    );
+                    renderSurvivalLog(latestGame?.log ?? score.log ?? []);
+                });
                 titleText.className = "score-title";
                 titleText.innerText = ` (${getTitleForXp(score.xp ?? 0)})`;
                 scoreText.innerText = `: ${value(score)} ${label}`;
@@ -85,6 +82,22 @@ function renderLeaderboard() {
                 item.append(nameButton, titleText, scoreText);
                 list.appendChild(item);
             });
+    });
+
+    recentGamesList.innerHTML = "";
+    getRecentGames().slice(0, 10).forEach((game, index) => {
+        const item = document.createElement("li");
+        const gameButton = document.createElement("button");
+        const scoreText = document.createElement("span");
+
+        gameButton.className = "recent-game";
+        gameButton.type = "button";
+        gameButton.innerText = `${index + 1}. ${game.name}`;
+        gameButton.addEventListener("click", () => renderSurvivalLog(game.log ?? []));
+        scoreText.innerText = ` ${game.points} points | ${game.events} events`;
+
+        item.append(gameButton, scoreText);
+        recentGamesList.appendChild(item);
     });
 }
 
@@ -135,16 +148,25 @@ function saveScore() {
         return;
     }
     const scores = getScores();
-    const newScore = { name, points, events: eventsSurvived, xp, log: [...currentRoundLog] };
+    const round = {
+        name,
+        points: highestScore,
+        events: eventsSurvived,
+        xp,
+        log: [...currentRoundLog]
+    };
+    const recentGames = [round, ...getRecentGames()].slice(0, 10);
+    localStorage.setItem(recentGamesKey, JSON.stringify(recentGames));
+
+    const newScore = { name, points, events: eventsSurvived, xp };
     const existingScore = findScore(scores, name);
 
     if (!existingScore) {
         scores.push(newScore);
     } else {
-        existingScore.points = newScore.points;
+        existingScore.points = Math.max(existingScore.points ?? 0, newScore.points);
         existingScore.events = Math.max(existingScore.events ?? 0, newScore.events);
         existingScore.xp = newScore.xp;
-        existingScore.log = [...(existingScore.log ?? []), ...newScore.log];
     }
 
     localStorage.setItem(leaderboardKey, JSON.stringify(scores));
@@ -301,6 +323,7 @@ function restartGame() {
     combo = 0;
     currentRoundLog = [];
     gameOver = false;
+    renderSurvivalLog(currentRoundLog);
     updateGameStats();
     restartButton.hidden = true;
     newEventButton.disabled = false;

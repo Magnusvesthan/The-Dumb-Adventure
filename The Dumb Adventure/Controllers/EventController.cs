@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SurvivalGame.Models;
-using System.Collections.Generic;
-using System;
 namespace SurvivalGame.Controllers
 {
     [ApiController]
@@ -171,7 +169,6 @@ namespace SurvivalGame.Controllers
                     new EventOption { Text = "Spørg hende, hvad der er galt", Points = 10, Result = "Hun fortæller dig, at hun er faret vild."},
                     new EventOption { Text = "Tilbyd at hjælpe hende med at finde vej", Points = 15, Result = "I finder sammen tilbage til stien."},
                     new EventOption { Text = "Ignorer hende og gå videre", Points = -5, Result = "Hun bliver mere fortvivlet og du føler dig skyldig."},
-                    new() { Text = "Voldtag hende", Points = -100, Result = "Du bliver arresteret og mister spillet."}
                 }
             }
 
